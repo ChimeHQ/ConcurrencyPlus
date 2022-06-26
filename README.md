@@ -17,7 +17,7 @@ queue.addOperation {
 ```
 
 ```swift
-// These are garanteed to execute in the order they were submitted.
+// These are guaranteed to execute in the order they were submitted.
 Task.ordered(priority: .background) {
     event1()
 }
