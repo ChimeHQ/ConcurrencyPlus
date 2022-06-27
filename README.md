@@ -3,9 +3,11 @@
 # ConcurrencyPlus
 Utilities for working with Swift Concurrency
 
-## TaskQueue
+## Types
 
-Conceptually similar to a serial `DispatchQueue`, but can accept async blocks. Unlike with an unstructured `Task`, this makes it possible to control the ordering of events. `TaskQueue` may need to boost priorities to avoid priority inversions.
+### TaskQueue
+
+Conceptually similar to a serial `DispatchQueue`, but can accept async blocks. Unlike with an unstructured `Task`, this makes it possible to control the ordering of events. A queue of tasks like this introduces the possibility of priority inversions. To help avoid this, you can only set a priority on a per-queue basis, not per-operation.
 
 ```swift
 let queue = TaskQueue()
@@ -16,9 +18,11 @@ queue.addOperation {
 }
 ```
 
+`TaskQueue` also defines a single global queue, to enable this:
+
 ```swift
-// These are guaranteed to execute in the order they were submitted.
-Task.ordered(priority: .background) {
+// Without .ordered, the execution order of these tasks is not well-defined.
+Task.ordered {
     event1()
 }
 
@@ -31,7 +35,7 @@ Task.ordered {
 }
 ```
 
-## CancellingContinuation
+### CancellingContinuation
 
 Just like a `CheckedContinuation`, but will automatically resume by throwing if it is deallocated without being resumed manually. This is useful for situations where you cannot guarantee that a closure will be called. An example of such a situation is an XPC call.
 

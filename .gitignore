@@ -2,5 +2,4 @@
 /.build
 /Carthage
 /Packages
-xcuserdata/
-DerivedData/
+/.swiftpm
