@@ -9,11 +9,13 @@ public final class TaskQueue: @unchecked Sendable {
     private let lock: NSLock
     public let priority: TaskPriority?
     private var queue: [WorkItem]
+    private var executing: Bool
 
     public init(priority: TaskPriority? = nil) {
         self.lock = NSLock()
         self.queue = []
         self.priority = priority
+        self.executing = false
 
         lock.name = "com.chimehq.AsyncQueue"
     }
@@ -21,15 +23,17 @@ public final class TaskQueue: @unchecked Sendable {
     public func addOperation(operation: @escaping WorkItem) {
         lock.lock()
 
-        let empty = queue.isEmpty
+        let idle = queue.isEmpty && executing == false
 
-        if empty == false {
+        if idle == false {
             queue.append(operation)
+        } else {
+            self.executing = true
         }
 
         lock.unlock()
 
-        if empty {
+        if idle {
             execute(operation)
         }
     }
@@ -51,13 +55,17 @@ public final class TaskQueue: @unchecked Sendable {
     private func executeNextItem() {
         lock.lock()
 
-        let details = dequeueNextItem()
+        guard let details = dequeueNextItem() else {
+            self.executing = false
+            lock.unlock()
+            return
+        }
+
+        self.executing = true
 
         lock.unlock()
 
-        if let details {
-            execute(details)
-        }
+        execute(details)
     }
 }
 
