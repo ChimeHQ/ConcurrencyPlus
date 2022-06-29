@@ -4,11 +4,15 @@ import Foundation
 public final class TaskQueue: @unchecked Sendable {
     public static let global = TaskQueue()
 
-    public typealias WorkItem = @Sendable () async -> Void
+    public typealias WorkItemBlock = @Sendable () async -> Void
+
+    public struct WorkItem: Sendable {
+        let work: @Sendable () async -> Void
+    }
 
     private let lock: NSLock
     public let priority: TaskPriority?
-    private var queue: [WorkItem]
+    private var queue: [WorkItemBlock]
     private var executing: Bool
 
     public init(priority: TaskPriority? = nil) {
@@ -20,7 +24,7 @@ public final class TaskQueue: @unchecked Sendable {
         lock.name = "com.chimehq.AsyncQueue"
     }
 
-    public func addOperation(operation: @escaping WorkItem) {
+    public func addOperation(operation: @escaping WorkItemBlock) {
         lock.lock()
 
         let idle = queue.isEmpty && executing == false
@@ -38,13 +42,35 @@ public final class TaskQueue: @unchecked Sendable {
         }
     }
 
-    private func dequeueNextItem() -> WorkItem? {
+    public func addResultOperation<Success>(operation: @escaping @Sendable () async throws -> Success) async throws -> Success {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Success, Error>) in
+            self.addOperation {
+                do {
+                    let value = try await operation()
+
+                    continuation.resume(returning: value)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    public func allOperationsAreFinished() async {
+        await withCheckedContinuation { (continuation: CheckedContinuation<(), Never>) in
+            self.addOperation {
+                continuation.resume()
+            }
+        }
+    }
+
+    private func dequeueNextItem() -> WorkItemBlock? {
         guard queue.isEmpty == false else { return nil }
 
         return queue.removeFirst()
     }
 
-    private func execute(_ item: @escaping WorkItem) {
+    private func execute(_ item: @escaping WorkItemBlock) {
         Task.detached(priority: priority) {
             await item()
 

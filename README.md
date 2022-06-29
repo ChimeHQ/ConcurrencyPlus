@@ -16,6 +16,11 @@ queue.addOperation {
     await asyncFunction()
     await anotherAsyncFunction()
 }
+
+// Can also run an operation that will return a value one executed. Neat!
+let value = await queue.addResultOperation {
+    return await makeValue()
+}
 ```
 
 `TaskQueue` also defines a single global queue, to enable this:
