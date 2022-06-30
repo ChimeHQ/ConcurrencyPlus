@@ -7,7 +7,10 @@ Utilities for working with Swift Concurrency
 
 ### TaskQueue
 
-Conceptually similar to a serial `DispatchQueue`, but can accept async blocks. Unlike with an unstructured `Task`, this makes it possible to control the ordering of events. A queue of tasks like this introduces the possibility of priority inversions. To help avoid this, you can only set a priority on a per-queue basis, not per-operation.
+Conceptually similar to a serial `DispatchQueue`, but can accept async blocks. Unlike with an unstructured `Task`, this makes it possible to control the ordering of events.
+
+> **Note**
+> A queue of tasks like this introduces the possibility of priority inversions. To help avoid this, you can only set a priority on a per-queue basis, not per-operation.
 
 ```swift
 let queue = TaskQueue()
@@ -17,7 +20,7 @@ queue.addOperation {
     await anotherAsyncFunction()
 }
 
-// Can also run an operation that will return a value one executed. Neat!
+// Can also run an operation that will return a value once executed. Neat!
 let value = await queue.addResultOperation {
     return await makeValue()
 }
