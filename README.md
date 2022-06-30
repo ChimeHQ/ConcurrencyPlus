@@ -30,7 +30,8 @@ let value = await queue.addResultOperation {
 `TaskQueue` also defines a single global queue, to enable this:
 
 ```swift
-// Without .ordered, the execution order of these tasks is not well-defined.
+// Without .ordered, the execution order of these
+// tasks is not well-defined.
 Task.ordered {
     event1()
 }
