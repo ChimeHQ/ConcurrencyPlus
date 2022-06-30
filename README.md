@@ -1,4 +1,5 @@
 [![License][license badge]][license]
+[![Platforms][platforms badge]][platforms]
 
 # ConcurrencyPlus
 Utilities for working with Swift Concurrency
@@ -63,3 +64,5 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 [license]: https://opensource.org/licenses/BSD-3-Clause
 [license badge]: https://img.shields.io/github/license/ChimeHQ/ConcurrencyPlus
+[platforms]: https://swiftpackageindex.com/ChimeHQ/ConcurrencyPlus
+[platforms badge]: https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FChimeHQ%2FConcurrencyPlus%2Fbadge%3Ftype%3Dplatforms
