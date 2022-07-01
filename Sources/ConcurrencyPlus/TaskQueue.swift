@@ -1,102 +1,95 @@
 import Foundation
 
+fileprivate protocol Awaitable: Sendable {
+    func waitForCompletion() async
+}
+
+extension Task: Awaitable {
+    func waitForCompletion() async {
+        _ = try? await value
+    }
+}
+
 /// A serial queue that executes async tasks in the order they were submitted.
 public final class TaskQueue: @unchecked Sendable {
-    public static let global = TaskQueue()
-
-    public typealias WorkItemBlock = @Sendable () async -> Void
-
-    public struct WorkItem: Sendable {
-        let work: @Sendable () async -> Void
-    }
+    static let global = TaskQueue()
 
     private let lock: NSLock
-    public let priority: TaskPriority?
-    private var queue: [WorkItemBlock]
-    private var executing: Bool
+    private var lastOperation: (any Awaitable)?
 
-    public init(priority: TaskPriority? = nil) {
+    public init() {
         self.lock = NSLock()
-        self.queue = []
-        self.priority = priority
-        self.executing = false
 
-        lock.name = "com.chimehq.AsyncQueue"
+        lock.name = "com.chimehq.TaskQueue"
     }
 
-    public func addOperation(operation: @escaping WorkItemBlock) {
+    /// Submit a throwing operation to the queue.
+    @discardableResult
+    public func addOperation<Success>(
+        priority: TaskPriority? = nil,
+        operation: @escaping @Sendable () async throws -> Success)
+    -> Task<Success, Error> where Success : Sendable {
         lock.lock()
+        defer { lock.unlock() }
 
-        let idle = queue.isEmpty && executing == false
+        let lastOperation = self.lastOperation
 
-        if idle == false {
-            queue.append(operation)
-        } else {
-            self.executing = true
+        let task = Task.detached(priority: priority) {
+            // this await will do the right thing to avoid priority inversion
+            await lastOperation?.waitForCompletion()
+
+            return try await operation()
         }
 
-        lock.unlock()
+        self.lastOperation = task
 
-        if idle {
-            execute(operation)
-        }
+        return task
     }
 
-    public func addResultOperation<Success>(operation: @escaping @Sendable () async throws -> Success) async throws -> Success {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Success, Error>) in
-            self.addOperation {
-                do {
-                    let value = try await operation()
+    /// Submit an operation to the queue.
+    @discardableResult
+    public func addOperation<Success>(
+        priority: TaskPriority? = nil,
+        operation: @escaping @Sendable () async -> Success)
+    -> Task<Success, Never> where Success : Sendable {
+        lock.lock()
+        defer { lock.unlock() }
 
-                    continuation.resume(returning: value)
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-            }
+        let lastOperation = self.lastOperation
+
+        let task = Task.detached(priority: priority) {
+            // this await will do the right thing to avoid priority inversion
+            await lastOperation?.waitForCompletion()
+
+            return await operation()
         }
+
+        self.lastOperation = task
+
+        return task
     }
 
     public func allOperationsAreFinished() async {
-        await withCheckedContinuation { (continuation: CheckedContinuation<(), Never>) in
-            self.addOperation {
-                continuation.resume()
-            }
-        }
-    }
-
-    private func dequeueNextItem() -> WorkItemBlock? {
-        guard queue.isEmpty == false else { return nil }
-
-        return queue.removeFirst()
-    }
-
-    private func execute(_ item: @escaping WorkItemBlock) {
-        Task.detached(priority: priority) {
-            await item()
-
-            self.executeNextItem()
-        }
-    }
-
-    private func executeNextItem() {
-        lock.lock()
-
-        guard let details = dequeueNextItem() else {
-            self.executing = false
-            lock.unlock()
-            return
-        }
-
-        self.executing = true
-
-        lock.unlock()
-
-        execute(details)
+        await addOperation(operation: {}).waitForCompletion()
     }
 }
 
 extension Task where Success == Void, Failure == Never {
-    public static func ordered(operation: @escaping @Sendable () async -> Void) {
-        TaskQueue.global.addOperation(operation: operation)
+    /// Submit a throwing operation to the global queue.
+    @discardableResult
+    public static func ordered<Success>(
+        priority: TaskPriority? = nil,
+        operation: @escaping @Sendable () async throws -> Success)
+    -> Task<Success, Error> where Success : Sendable {
+        return TaskQueue.global.addOperation(priority: priority, operation: operation)
+    }
+
+    /// Submit an operation to the global queue.
+    @discardableResult
+    public static func ordered<Success>(
+        priority: TaskPriority? = nil,
+        operation: @escaping @Sendable () async -> Success)
+    -> Task<Success, Never> where Success : Sendable {
+        return TaskQueue.global.addOperation(priority: priority, operation: operation)
     }
 }
