@@ -34,7 +34,7 @@ public final class TaskQueue: @unchecked Sendable {
 
         let lastOperation = self.lastOperation
 
-        let task = Task.detached(priority: priority) {
+        let task: Task<Success, Error> = Task.detached(priority: priority) {
             // this await will do the right thing to avoid priority inversion
             await lastOperation?.waitForCompletion()
 
@@ -57,7 +57,7 @@ public final class TaskQueue: @unchecked Sendable {
 
         let lastOperation = self.lastOperation
 
-        let task = Task.detached(priority: priority) {
+        let task: Task<Success, Never> = Task.detached(priority: priority) {
             // this await will do the right thing to avoid priority inversion
             await lastOperation?.waitForCompletion()
 
