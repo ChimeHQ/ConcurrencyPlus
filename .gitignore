@@ -3,3 +3,4 @@
 /Carthage
 /Packages
 /.swiftpm
+.docc-build/
