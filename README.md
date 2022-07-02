@@ -5,6 +5,8 @@
 # ConcurrencyPlus
 Utilities for working with Swift Concurrency
 
+This is a really small library with some type and extensions that may be useful when working with Swift's concurrency system. For API details, see the [documentation](https://swiftpackageindex.com/ChimeHQ/ConcurrencyPlus/main/documentation/concurrencyplus).
+
 ## Types
 
 ### TaskQueue
