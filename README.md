@@ -53,7 +53,7 @@ Task.ordered {
 Just like a `CheckedContinuation`, but will automatically resume by throwing if it is deallocated without being resumed manually. This is useful for situations where you cannot guarantee that a closure will be called. An example of such a situation is an XPC call.
 
 ```swift
-try await withCancellingContinutation({ continuation in
+try await withCancellingContinuation({ continuation in
     funcThatMightNotInvokeItsCallback(completionHandler: { in
         continuation.resume()
     })
