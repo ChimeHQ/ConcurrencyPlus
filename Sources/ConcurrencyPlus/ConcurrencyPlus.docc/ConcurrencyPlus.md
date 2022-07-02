@@ -20,14 +20,15 @@ Task.ordered(priority: .background) {
 
 - <doc:GettingStarted>
 
-### Running async tasks
+### Managing async tasks
 
 - ``TaskQueue``
 - ``TaskQueue/addOperation(priority:operation:)-8lp35``
 - ``TaskQueue/addOperation(priority:operation:)-4p67v``
+- ``TaskQueue/allOperationsAreFinished()``
 
 ### Cancelling continuation
 
-- ``withCancellingContinutation(function:_:)``
+- ``withCancellingContinuation(function:_:)``
 - ``CancellingContinuation``
 - ``CancellingContinuationError``
