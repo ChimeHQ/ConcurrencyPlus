@@ -16,9 +16,11 @@ public final class TaskQueue: @unchecked Sendable {
 
     private let lock: NSLock
     private var lastOperation: (any Awaitable)?
+    private var pendingCount: Int
 
     public init() {
         self.lock = NSLock()
+        self.pendingCount = 0
 
         lock.name = "com.chimehq.TaskQueue"
     }
@@ -56,17 +58,35 @@ public final class TaskQueue: @unchecked Sendable {
         defer { lock.unlock() }
 
         let lastOperation = self.lastOperation
+        self.pendingCount += 1
 
         let task: Task<Success, Never> = Task.detached(priority: priority) {
             // this await will do the right thing to avoid priority inversion
             await lastOperation?.waitForCompletion()
 
-            return await operation()
+            let value = await operation()
+
+            self.finishPendingOperation()
+
+            return value
         }
 
         self.lastOperation = task
 
         return task
+    }
+
+    private func finishPendingOperation() {
+        // we must do this to release the reference to the last task upon completion
+        
+        lock.lock()
+        defer { lock.unlock() }
+
+        self.pendingCount -= 1
+
+        if pendingCount == 0 {
+            self.lastOperation = nil
+        }
     }
 
     public func allOperationsAreFinished() async {
