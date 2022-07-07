@@ -35,12 +35,17 @@ public final class TaskQueue: @unchecked Sendable {
         defer { lock.unlock() }
 
         let lastOperation = self.lastOperation
+        self.pendingCount += 1
 
         let task: Task<Success, Error> = Task.detached(priority: priority) {
             // this await will do the right thing to avoid priority inversion
             await lastOperation?.waitForCompletion()
 
-            return try await operation()
+            let value = try await operation()
+
+            self.finishPendingOperation()
+
+            return value
         }
 
         self.lastOperation = task
