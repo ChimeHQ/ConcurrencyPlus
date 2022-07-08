@@ -3,16 +3,17 @@ import ConcurrencyPlus
 
 final class TaskQueueTests: XCTestCase {
     func testOrdered() async {
-        var array = [Int]()
-
-        for i in 0..<1000 {
-            let task: Task<Int, Never> = Task.ordered { return i }
-
-            array.append(await task.value)
+        var tasks = [Task<TimeInterval, Never>]()
+        for _ in 0..<1_000 {
+            let task = Task.ordered { Date().timeIntervalSince1970 }
+            tasks.append(task)
         }
 
-        let sorted = array.sorted()
+        var array = [TimeInterval]()
+        for t in tasks {
+            array.append(await t.value)
+        }
 
-        XCTAssertEqual(array, sorted)
+        XCTAssertEqual(array, array.sorted())
     }
 }
