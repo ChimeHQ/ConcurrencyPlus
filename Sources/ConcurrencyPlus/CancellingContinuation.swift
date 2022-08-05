@@ -2,6 +2,7 @@ import Foundation
 
 public enum CancellingContinuationError: Error {
     case cancelledOnDeinit
+    case missingBothValueAndError
 }
 
 /// A continuation that will automatically throw if deallocated without being resumed

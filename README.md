@@ -50,6 +50,8 @@ Task.ordered {
 
 ### CancellingContinuation
 
+Going to deprecate this one. Check out `withContinuation` below.
+
 Just like a `CheckedContinuation`, but will automatically resume by throwing if it is deallocated without being resumed manually. This is useful for situations where you cannot guarantee that a closure will be called. An example of such a situation is an XPC call.
 
 ```swift
@@ -58,6 +60,14 @@ try await withCancellingContinuation({ continuation in
         continuation.resume()
     })
 })
+```
+
+### NSXPCConnection Extensions
+
+You might be tempted to make your XPC interface functions `async`. While this does work, it does not correctly handle connection failures and is unsafe. This little `NSXPCConnection` extension provides a safe way to get into the async world. This is preferred over using `CancellingContinuation`.
+
+```swift
+func withContinuation<Service, T>(function: String = #function, _ body: (Service, CheckedContinuation<T, Error>) -> Void) async throws -> T
 ```
 
 ### Suggestions or Feedback
