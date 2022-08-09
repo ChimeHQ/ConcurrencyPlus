@@ -15,7 +15,7 @@ public final class TaskQueue: @unchecked Sendable {
     static let global = TaskQueue()
 
     private let lock: NSLock
-    private var lastOperation: (any Awaitable)?
+    private var lastOperation: Awaitable?
     private var pendingCount: Int
 
     public init() {
