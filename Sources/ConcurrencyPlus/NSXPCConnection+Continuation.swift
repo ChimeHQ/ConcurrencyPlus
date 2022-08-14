@@ -24,7 +24,7 @@ public extension NSXPCConnection {
 
     /// Access a proxy for a one-way message that is automatically cancelled on connection failure
     func withService<Service>(function: String = #function, _ body: (Service) throws -> Void) async throws {
-        try await withContinuation(function: function, { (service, continuation: CheckedContinuation<Void, Error>) in
+        try await withContinuation(function: function, { (service: Service, continuation: CheckedContinuation<Void, Error>) in
             do {
                 try body(service)
 
