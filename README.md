@@ -50,7 +50,7 @@ Task.ordered {
 
 ### NSXPCConnection
 
-You might be tempted to make your XPC interface functions `async`. While this does work, it does not correctly handle connection failures and is unsafe. This little `NSXPCConnection` extension provides a safe way to get into the async world. This is preferred over using `CancellingContinuation`.
+You might be tempted to make your XPC interface functions `async`. While this does work, it does not correctly handle connection failures and is unsafe. This little `NSXPCConnection` extension provides a safe way to get into the async world.
 
 ```swift
 func withContinuation<Service, T>(function: String = #function, _ body: (Service, CheckedContinuation<T, Error>) -> Void) async throws -> T
