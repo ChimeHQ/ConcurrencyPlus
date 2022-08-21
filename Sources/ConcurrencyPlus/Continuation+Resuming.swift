@@ -10,29 +10,6 @@ extension CheckedContinuation where T == Void {
     }
 }
 
-extension CancellingContinuation where T == Void {
-    public func resume(with error: Error?) {
-        if let error = error {
-            resume(throwing: error)
-        } else {
-            resume()
-        }
-    }
-}
-
-extension CancellingContinuation {
-    public func resume(with value: T?, error: Error?) {
-        switch (value, error) {
-        case (let value?, nil):
-            resume(returning: value)
-        case (_, let error?):
-            resume(throwing: error)
-        case (nil, nil):
-            resume(throwing: CancellingContinuationError.missingBothValueAndError)
-        }
-    }
-}
-
 extension CheckedContinuation where E == Error {
     public func resume(with value: T?, error: Error?) {
         switch (value, error) {
@@ -60,3 +37,23 @@ extension CheckedContinuation where T == Void, E == Error {
     }
 }
 
+extension CheckedContinuation where T: Decodable, E == Error {
+	public func resume(with data: Data?, error: Error?) {
+		switch (data, error) {
+		case (_, let error?):
+			resume(throwing: error)
+		case (nil, nil):
+			resume(throwing: ConnectionContinuationError.missingBothValueAndError)
+		case (let encodedValue?, nil):
+			let result = Result(catching: { try JSONDecoder().decode(T.self, from: encodedValue) })
+
+			resume(with: result)
+		}
+	}
+
+	public var resumingHandler: (Data?, Error?) -> Void {
+		return {
+			self.resume(with: $0, error: $1)
+		}
+	}
+}
