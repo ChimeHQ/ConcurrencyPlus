@@ -48,7 +48,7 @@ Task.ordered {
 }
 ```
 
-### NSXPCConnection Extensions
+### NSXPCConnection
 
 You might be tempted to make your XPC interface functions `async`. While this does work, it does not correctly handle connection failures and is unsafe. This little `NSXPCConnection` extension provides a safe way to get into the async world. This is preferred over using `CancellingContinuation`.
 
@@ -56,17 +56,26 @@ You might be tempted to make your XPC interface functions `async`. While this do
 func withContinuation<Service, T>(function: String = #function, _ body: (Service, CheckedContinuation<T, Error>) -> Void) async throws -> T
 ```
 
-### CancellingContinuation
-
-Going to deprecate this one. Check out `withContinuation` below.
-
-Just like a `CheckedContinuation`, but will automatically resume by throwing if it is deallocated without being resumed manually. This is useful for situations where you cannot guarantee that a closure will be called. An example of such a situation is an XPC call.
+There are also some extensions on `CheckedContinuation` to make it easier to use in the context of XPC. These are really handy for resuming from common reply patterns.
 
 ```swift
-try await withCancellingContinuation({ continuation in
-    funcThatMightNotInvokeItsCallback(completionHandler: { in
-        continuation.resume()
-    })
+protocol XPCService {
+	errorMmethod(reply: (Error?) -> Void)
+	valueAndErrorMethod(reply: (String?, Error?) -> Void)
+	dataAndErrorMethod(reply: (Data?, Error?) -> Void)
+}
+
+try await withContinuation({ service, continuation in
+	service.errorMmethod(reply: continuation.resumingHandler)
+})
+
+try await withContinuation({ service, continuation in
+	service.valueAndErrorMethod(reply: continuation.resumingHandler)
+})
+
+// this one will try to use JSONDecoder on the resulting data
+try await withContinuation({ service, continuation in
+	service.dataAndErrorMethod(reply: continuation.resumingHandler)
 })
 ```
 
