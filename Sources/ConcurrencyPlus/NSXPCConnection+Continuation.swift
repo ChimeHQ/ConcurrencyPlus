@@ -1,5 +1,6 @@
 import Foundation
 
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 public enum ConnectionContinuationError: Error {
     case serviceTypeMismatch
     case missingBothValueAndError
@@ -35,3 +36,4 @@ public extension NSXPCConnection {
         })
     }
 }
+#endif
