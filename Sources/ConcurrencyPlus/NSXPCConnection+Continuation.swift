@@ -1,10 +1,11 @@
 import Foundation
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 public enum ConnectionContinuationError: Error {
     case serviceTypeMismatch
     case missingBothValueAndError
 }
+
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 
 public extension NSXPCConnection {
     /// Create a continuation that is automatically cancelled on connection failure
