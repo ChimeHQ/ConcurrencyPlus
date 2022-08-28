@@ -50,33 +50,44 @@ Task.ordered {
 
 ### NSXPCConnection
 
-You might be tempted to make your XPC interface functions `async`. While this does work, it does not correctly handle connection failures and is unsafe. This little `NSXPCConnection` extension provides a safe way to get into the async world.
+You might be tempted to make your XPC interface functions `async`. This does not handle connection failures and can hang your `Task`s because it violates the Structured Concurrency contract, so it is unsafe.
+
+This little `NSXPCConnection` extension provides a safe way to get into the async world.
 
 ```swift
-func withContinuation<Service, T>(function: String = #function, _ body: (Service, CheckedContinuation<T, Error>) -> Void) async throws -> T
+func withContinuation<Service, T>(
+    function: String = #function, 
+    _ body: (Service, CheckedContinuation<T, Error>) -> Void
+) async throws -> T
 ```
 
 There are also some extensions on `CheckedContinuation` to make it easier to use in the context of XPC. These are really handy for resuming from common reply patterns.
 
+Given an XPC service like this in your code:
+
 ```swift
 protocol XPCService {
-	errorMmethod(reply: (Error?) -> Void)
-	valueAndErrorMethod(reply: (String?, Error?) -> Void)
-	dataAndErrorMethod(reply: (Data?, Error?) -> Void)
+    func errorMethod(reply: (Error?) -> Void)
+    func valueAndErrorMethod(reply: (String?, Error?) -> Void)
+    func dataAndErrorMethod(reply: (Data?, Error?) -> Void)
+}
+```
+
+The continuation helpers allow bridging like:
+
+```swift
+try await withContinuation { service, continuation in
+    service.errorMethod(reply: continuation.resumingHandler)
 }
 
-try await withContinuation({ service, continuation in
-	service.errorMmethod(reply: continuation.resumingHandler)
-})
-
-try await withContinuation({ service, continuation in
-	service.valueAndErrorMethod(reply: continuation.resumingHandler)
-})
+try await withContinuation { service, continuation in
+    service.valueAndErrorMethod(reply: continuation.resumingHandler)
+}
 
 // this one will try to use JSONDecoder on the resulting data
-try await withContinuation({ service, continuation in
-	service.dataAndErrorMethod(reply: continuation.resumingHandler)
-})
+try await withContinuation { service, continuation in
+    service.dataAndErrorMethod(reply: continuation.resumingHandler)
+}
 ```
 
 ### Suggestions or Feedback
