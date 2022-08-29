@@ -50,7 +50,7 @@ Task.ordered {
 
 ### NSXPCConnection
 
-You might be tempted to make your XPC interface functions `async`. This does not handle connection failures and can hang your `Task`s because it violates the Structured Concurrency contract, so it is unsafe. [See the post "ExtensionKit and XPC" for context.](https://www.chimehq.com/blog/extensionkit-xpc)
+You might be tempted to make your XPC interface functions `async`. This does not handle connection failures and can hang your `Task`s because it violates the Structured Concurrency contract, so it is unsafe. See the post ["ExtensionKit and XPC"](https://www.chimehq.com/blog/extensionkit-xpc) for context.
 
 This little `NSXPCConnection` extension provides a safe way to get into the async world.
 
