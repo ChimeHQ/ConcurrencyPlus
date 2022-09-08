@@ -41,11 +41,9 @@ public final class TaskQueue: @unchecked Sendable {
             // this await will do the right thing to avoid priority inversion
             await lastOperation?.waitForCompletion()
 
-            let value = try await operation()
+			defer { self.finishPendingOperation() }
 
-            self.finishPendingOperation()
-
-            return value
+			return try await operation()
         }
 
         self.lastOperation = task
@@ -69,11 +67,9 @@ public final class TaskQueue: @unchecked Sendable {
             // this await will do the right thing to avoid priority inversion
             await lastOperation?.waitForCompletion()
 
-            let value = await operation()
+			defer { self.finishPendingOperation() }
 
-            self.finishPendingOperation()
-
-            return value
+            return await operation()
         }
 
         self.lastOperation = task
