@@ -11,6 +11,44 @@ extension Task: Awaitable {
 }
 
 /// A serial queue that executes async tasks in the order they were submitted.
+///
+/// Conceptually similar to a serial `DispatchQueue`, but can accept async blocks. Unlike
+/// with an unstructured `Task`, this makes it possible to control the ordering of events.
+///
+/// ```swift
+/// let queue = TaskQueue()
+///
+/// queue.addOperation {
+///     await asyncFunction()
+///     await anotherAsyncFunction()
+/// }
+///
+/// // This can can also return the underlying Task,
+/// // so you can cancel, or await a value
+/// let task = await queue.addOperation {
+///     return await makeValue()
+/// }
+///
+/// let value = try await task.value
+/// ```
+///
+/// `TaskQueue` also defines a single global queue, to enable this:
+///
+/// ```swift
+/// // Without .ordered, the execution order of these
+/// // tasks is not well-defined.
+/// Task.ordered {
+///     event1()
+/// }
+///
+/// Task.ordered(priority: .background) {
+///     event2()
+/// }
+///
+/// Task.ordered {
+///     event3()
+/// }
+/// ```
 public final class TaskQueue: @unchecked Sendable {
     static let global = TaskQueue()
 

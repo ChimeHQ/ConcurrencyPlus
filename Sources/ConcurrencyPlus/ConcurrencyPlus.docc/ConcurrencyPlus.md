@@ -1,34 +1,17 @@
 # ``ConcurrencyPlus``
 
-Execute async tasks preserving the order in which they are scheduled by using an async task queues.
+Utilities for working with Swift Concurrency.
 
-Run async tasks in order as simple as:
+## Overview
 
-```swift
-Task.ordered {
-    event1()
-}
-
-Task.ordered(priority: .background) {
-    event2()
-}
-```
+ConcurrencyPlus includes a number of types and extensions that are helpful when working with Swift Concurrency.
 
 ## Topics
 
-### Getting Started
-
-- <doc:GettingStarted>
-
-### Managing async tasks
+### Working with Tasks
 
 - ``TaskQueue``
-- ``TaskQueue/addOperation(priority:operation:)-8lp35``
-- ``TaskQueue/addOperation(priority:operation:)-4p67v``
-- ``TaskQueue/allOperationsAreFinished()``
 
-### Cancelling continuation
+### XPC and Continuations
 
-- ``withCancellingContinuation(function:_:)``
-- ``CancellingContinuation``
-- ``CancellingContinuationError``
+- <doc:Working-With-XPC>
