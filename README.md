@@ -12,6 +12,7 @@ This is a really small library with some type and extensions that may be useful 
 - `CheckedContinuation` extensions for improved ergnomics
 - `Task` extensions for improved ergnomics when used to bridge to non-async code
 - `NSXPCConnection` extensions for safe async integration
+- `MainActor.runUnsafely` to help work around incorrectly- or insufficently-annotated code not under your control
 
 📖 [Documentation][documentation] is available in DocC format.
 
