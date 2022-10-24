@@ -14,7 +14,38 @@ This is a really small library with some type and extensions that may be useful 
 - `NSXPCConnection` extensions for safe async integration
 - `MainActor.runUnsafely` to help work around incorrectly- or insufficently-annotated code not under your control
 
-📖 [Documentation][documentation] is available in DocC format.
+## TaskQueue
+
+```swift
+let queue = TaskQueue()
+
+queue.addOperation {
+    await asyncFunction()
+    await anotherAsyncFunction()
+}
+
+// This can can also return the underlying Task, so you can cancel, or await a value
+let task = await queue.addOperation {
+    return await makeValue()
+}
+
+let value = try await task.value
+```
+
+```swift
+// Without .ordered, the execution order of these tasks is not well-defined.
+Task.ordered {
+    event1()
+}
+
+Task.ordered(priority: .background) {
+    event2()
+}
+
+Task.ordered {
+    event3()
+}
+```
 
 ## Suggestions or Feedback
 
