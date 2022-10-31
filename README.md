@@ -57,8 +57,8 @@ let subject = AsyncSubject<Int>()
 
 Task {
     subject.send(1)
-	subject.send(1)
-	subject.send(1)
+    subject.send(1)
+    subject.send(1)
 }
 
 for await value in subject {
