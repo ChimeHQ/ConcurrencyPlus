@@ -13,6 +13,7 @@ This is a really small library with some type and extensions that may be useful 
 - `Task` extensions for improved ergnomics when used to bridge to non-async code
 - `NSXPCConnection` extensions for safe async integration
 - `MainActor.runUnsafely` to help work around incorrectly- or insufficently-annotated code not under your control
+- `Async(Throwing)Subject` to make it easier to construct AsyncSequences from non-async code
 
 ## TaskQueue
 
@@ -44,6 +45,24 @@ Task.ordered(priority: .background) {
 
 Task.ordered {
     event3()
+}
+```
+
+## Async(Throwing)Subject
+
+Very simple wrapper around `AsyncStream` that works a lot like a Combine `Subject`. Handy for forwarding events into an `AsyncSequence`.
+
+```swift
+let subject = AsyncSubject<Int>()
+
+Task {
+    subject.send(1)
+	subject.send(1)
+	subject.send(1)
+}
+
+for await value in subject {
+    print("value: ", value)
 }
 ```
 
