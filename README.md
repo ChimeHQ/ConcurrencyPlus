@@ -13,7 +13,6 @@ This is a really small library with some type and extensions that may be useful 
 - `Task` extensions for improved ergonomics when used to bridge to non-async code
 - `NSXPCConnection` extensions for safe async integration
 - `MainActor.runUnsafely` to help work around incorrectly- or insufficiently-annotated code not under your control
-- `Async(Throwing)Subject` to make it easier to construct AsyncSequences from non-async code
 
 ## TaskQueue
 
@@ -48,23 +47,14 @@ Task.ordered {
 }
 ```
 
-## Async(Throwing)Subject
+## Other Useful Projects
 
-Very simple wrapper around `AsyncStream` that works a lot like a Combine `Subject`. Handy for forwarding events into an `AsyncSequence`.
+Right now, it's still quite difficult to make use of `AsyncSequence`. These libraries might be useful and are defintely worth checking out as well.
 
-```swift
-let subject = AsyncSubject<Int>()
-
-Task {
-    subject.send(1)
-    subject.send(1)
-    subject.send(1)
-}
-
-for await value in subject {
-    print("value: ", value)
-}
-```
+- [AnyAsyncSequence](https://github.com/vsanthanam/AnyAsyncSequence): super-focused on solving the lack type-erased sequences
+- [AsyncAlgorithms](https://github.com/apple/swift-async-algorithms): Apple-owned reactive extensions to `AsyncSequence`
+- [AsyncExtensions](https://github.com/sideeffect-io/AsyncExtensions): Companion to AsyncAlgorithms to add additional reactive features
+- [Asynchrone](https://github.com/reddavis/Asynchrone): Extensions to bring reactive features to `AsyncSequence`
 
 ## Suggestions or Feedback
 
