@@ -3,6 +3,7 @@ import Foundation
 /// An sequence that you can add values to using a function call.
 ///
 /// This type can make it a lot easier to adapt non-async code to sequences.
+@available(*, deprecated, message: "Please see the project README for alternative libraires that provide this functionality")
 public struct AsyncThrowingSubject<Element>: AsyncSequence {
 	typealias Stream = AsyncThrowingStream<Element, Error>
 
