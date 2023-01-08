@@ -91,7 +91,7 @@ try await withContinuation { service, continuation in
 
 ## Other Useful Projects
 
-Right now, it's still quite difficult to make use of `AsyncSequence`. These libraries might be useful and are defintely worth checking out as well.
+Right now, it's still quite difficult to make use of `AsyncSequence`. These libraries might be useful and are definitely worth checking out as well.
 
 - [AnyAsyncSequence](https://github.com/vsanthanam/AnyAsyncSequence): super-focused on solving the lack type-erased sequences
 - [AsyncAlgorithms](https://github.com/apple/swift-async-algorithms): Apple-owned reactive extensions to `AsyncSequence`
