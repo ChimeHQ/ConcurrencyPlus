@@ -47,6 +47,30 @@ Task.ordered {
 }
 ```
 
+## Task Ergonomics
+
+Some handy functions that ease integration with existing callbacks.
+
+```swift
+func callbackOptionalPair(_ block: @escaping (Int?, Error?) -> Void) {
+    Task.relayResult(to: block) {
+        // ... return async value or throw...
+    }
+}
+
+func callbackResult(_ block: @escaping (Result<Int, Error>) -> Void) {
+    Task.relayResult(to: block) {
+        // ... return async value or throw...
+    }
+}
+
+func callbackOptionalError(_ block: @escaping (Error?) -> Void) {
+    Task.relayResult(to: block) {
+        // ... possibly throw...
+    }
+}
+```
+
 ## Working with XPC
 
 You might be tempted to make your XPC interface functions `async`. This approach does not handle connection failures and will violate the Structured Concurrency contract, resulting in hangs. See the post ["ExtensionKit and XPC"](https://www.chimehq.com/blog/extensionkit-xpc) for context.
