@@ -6,7 +6,7 @@
 # ConcurrencyPlus
 Utilities for working with Swift Concurrency
 
-This is a really small library with some type and extensions that may be useful when working with Swift's concurrency system.
+This is a really small library with some types and extensions that may be useful when working with Swift's concurrency system.
 
 - A `TaskQueue` for queuing tasks in FIFO ordering
 - `CheckedContinuation` extensions for improved ergonomics
@@ -117,7 +117,7 @@ try await withContinuation { service, continuation in
 
 Right now, it's still quite difficult to make use of `AsyncSequence`. These libraries might be useful and are definitely worth checking out as well.
 
-- [AnyAsyncSequence](https://github.com/vsanthanam/AnyAsyncSequence): super-focused on solving the lack type-erased sequences
+- [AnyAsyncSequence](https://github.com/vsanthanam/AnyAsyncSequence): super-focused on addressing the lack of type-erased sequences
 - [AsyncAlgorithms](https://github.com/apple/swift-async-algorithms): Apple-owned reactive extensions to `AsyncSequence`
 - [AsyncExtensions](https://github.com/sideeffect-io/AsyncExtensions): Companion to AsyncAlgorithms to add additional reactive features
 - [Asynchrone](https://github.com/reddavis/Asynchrone): Extensions to bring reactive features to `AsyncSequence`
