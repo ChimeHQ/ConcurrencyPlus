@@ -16,4 +16,26 @@ final class TaskQueueTests: XCTestCase {
 
         XCTAssertEqual(array, array.sorted())
     }
+
+	func testThrowingTask() async {
+		let taskA = Task.ordered {
+			throw "abc"
+		}
+
+		let taskB = Task.ordered {
+			return "B"
+		}
+
+		do {
+			// this should throw
+			let _ = try await taskA.value
+
+			XCTFail()
+		} catch {
+		}
+
+		let value = await taskB.value
+
+		XCTAssertEqual(value, "B")
+	}
 }
