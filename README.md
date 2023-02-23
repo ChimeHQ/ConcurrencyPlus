@@ -80,11 +80,11 @@ This is a tool for moving a value across actor boundaries in a way that will kee
 
 ```swift
 actor MyActor {
-	let nonSendable: UnsendableType
-	
-	init(_ transfer: OwnershipTransferring<UnsendableType>) {
-		self.nonSendable = transfer.takeOwnership()
-	}
+    let nonSendable: UnsendableType
+
+    init(_ transfer: OwnershipTransferring<UnsendableType>) {
+        self.nonSendable = transfer.takeOwnership()
+    }
 }
 
 let nonSendable = UnsendableType()
@@ -105,7 +105,7 @@ let nonSendable = UnsendableType()
 let queue = RelaxedDisptachQueue(label: "myqueue")
 
 queue.async {
-	nonSendable.doThing() // no warnings
+    nonSendable.doThing() // no warnings
 }
 ```
 
