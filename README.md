@@ -13,6 +13,9 @@ This is a really small library with some types and extensions that may be useful
 - `Task` extensions for improved ergonomics when used to bridge to non-async code
 - `NSXPCConnection` extensions for safe async integration
 - `MainActor.runUnsafely` to help work around incorrectly- or insufficiently-annotated code not under your control
+- `OwnershipTransferring` to move a non-Sendable value across actor boundaries
+- `SendableBox` to lie to the compiler about Sendable conformance
+- `RelaxedDispatchQueue` a very thin `DispatchQueue` wrapper with relaxed argument sendability constraints
 
 ## TaskQueue
 
@@ -68,6 +71,41 @@ func callbackOptionalError(_ block: @escaping (Error?) -> Void) {
     Task.relayResult(to: block) {
         // ... possibly throw...
     }
+}
+```
+
+## OwnershipTransferring
+
+This is a tool for moving a value across actor boundaries in a way that will keep the compiler happy. It is reasonably unsafe. You have to be very careful about how the moved value is accessed.
+
+```swift
+actor MyActor {
+	let nonSendable: UnsendableType
+	
+	init(_ transfer: OwnershipTransferring<UnsendableType>) {
+		self.nonSendable = transfer.takeOwnership()
+	}
+}
+
+let nonSendable = UnsendableType()
+let transfer = OwnershipTransferring(nonSendable)
+
+let myActor = MyActor(transfer) // no warnings!
+
+transfer.hasOwnershipBeenTransferred() // true
+transfer.takeOwnership() // this will crash
+```
+
+## RelaxedDispatchQueue
+
+`DispatchQueue` now has implicit `@Sendable` closure arguments. This is a highly-disruptive change, as it makes queues no longer feasible as a means of non-Sendable state protection. Wrap up that that queue and carry on.
+
+```swift
+let nonSendable = UnsendableType()
+let queue = RelaxedDisptachQueue(label: "myqueue")
+
+queue.async {
+	nonSendable.doThing() // no warnings
 }
 ```
 
