@@ -136,19 +136,19 @@ public final class TaskQueue: @unchecked Sendable {
 extension Task where Success == Void, Failure == Never {
     /// Submit a throwing operation to the global queue.
     @discardableResult
-    public static func ordered<Success>(
+    public static func ordered<LocalSuccess>(
         priority: TaskPriority? = nil,
-        operation: @escaping @Sendable () async throws -> Success)
-    -> Task<Success, Error> where Success : Sendable {
+        operation: @escaping @Sendable () async throws -> LocalSuccess)
+    -> Task<LocalSuccess, Error> where LocalSuccess : Sendable {
         return TaskQueue.global.addOperation(priority: priority, operation: operation)
     }
 
     /// Submit an operation to the global queue.
     @discardableResult
-    public static func ordered<Success>(
+    public static func ordered<LocalSuccess>(
         priority: TaskPriority? = nil,
-        operation: @escaping @Sendable () async -> Success)
-    -> Task<Success, Never> where Success : Sendable {
+        operation: @escaping @Sendable () async -> LocalSuccess)
+    -> Task<LocalSuccess, Never> where LocalSuccess : Sendable {
         return TaskQueue.global.addOperation(priority: priority, operation: operation)
     }
 }
