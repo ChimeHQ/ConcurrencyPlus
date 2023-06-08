@@ -2,8 +2,7 @@ import XCTest
 import ConcurrencyPlus
 
 final class NonSendableType {
-	init() {
-	}
+	init() {}
 
 	func doThing() -> Int {
 		return 42
@@ -31,5 +30,7 @@ final class SendableContainerTests: XCTestCase {
 		let value = queue.sync {
 			nonsendable.doThing()
 		}
+
+		XCTAssertEqual(value, 42)
 	}
 }
