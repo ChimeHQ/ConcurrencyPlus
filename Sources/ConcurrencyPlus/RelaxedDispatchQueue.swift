@@ -20,8 +20,17 @@ public struct RelaxedDispatchQueue {
 		self.internalQueue = queue
 	}
 
+	/// Identical semantics to `DispatchQueue.asyncUnsafe()`.
 	public func async(_ block: @escaping () -> Void) {
+#if compiler(>=5.9)
+		if #available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *) {
+			internalQueue.asyncUnsafe(execute: block)
+		} else {
+			internalQueue.async(execute: block)
+		}
+#else
 		internalQueue.async(execute: block)
+#endif
 	}
 
 	public func sync<T>(_ block: @escaping () throws -> T) rethrows -> T {
