@@ -6,7 +6,11 @@ public extension Task where Failure == Error {
     /// This function behaves just like Task.init(priority:,operation:), but will
     /// invoke the supplied function `block` with the result of the Task when complete.
     @discardableResult
-    static func relayResult(priority: TaskPriority? = nil, to block: @escaping @Sendable (Success?, Failure?) -> Void, operation: @escaping @Sendable () async throws -> Success) -> Self {
+	static func relayResult(
+		priority: TaskPriority? = nil,
+		to block: @escaping @Sendable (Success?, Failure?) -> Void,
+		@_inheritActorContext operation: @escaping @Sendable () async throws -> Success
+	) -> Self {
         return Task(priority: priority) {
             do {
                 let value = try await operation()
@@ -27,7 +31,11 @@ public extension Task where Failure == Error {
     /// This function behaves just like Task.init(priority:,operation:), but will
     /// invoke the supplied function `block` with the result of the Task when complete.
     @discardableResult
-    static func relayResult(priority: TaskPriority? = nil, to block: @escaping @Sendable (Result<Success, Failure>) -> Void, operation: @escaping @Sendable () async throws -> Success) -> Self {
+	static func relayResult(
+		priority: TaskPriority? = nil,
+		to block: @escaping @Sendable (Result<Success, Failure>) -> Void,
+		@_inheritActorContext operation: @escaping @Sendable () async throws -> Success
+	) -> Self {
         return Task(priority: priority) {
             do {
                 let value = try await operation()
@@ -50,7 +58,11 @@ public extension Task where Success == (), Failure == Error {
     /// This function behaves just like Task.init(priority:,operation:), but will
     /// invoke the supplied function `block` with the result of the Task when complete.
     @discardableResult
-    static func relayResult(priority: TaskPriority? = nil, to block: @escaping @Sendable (Failure?) -> Void, operation: @escaping @Sendable () async throws -> Success) -> Self {
+	static func relayResult(
+		priority: TaskPriority? = nil,
+		to block: @escaping @Sendable (Failure?) -> Void,
+		@_inheritActorContext operation: @escaping @Sendable () async throws -> Success
+	) -> Self {
         return Task(priority: priority) {
             do {
                 try await operation()
