@@ -3,12 +3,10 @@ import XCTest
 
 final class MainActorTests: XCTestCase {
 	func testRunOnMainUnsafely() async throws {
-		let t = Task {
-			return await MainActor.run {
-				return MainActor.runUnsafely {
-					// this will crash if not on the main thread
-					return 42
-				}
+		let t = Task { @MainActor in
+			return MainActor.runUnsafely {
+				// this will crash if not on the main thread
+				return 42
 			}
 		}
 
