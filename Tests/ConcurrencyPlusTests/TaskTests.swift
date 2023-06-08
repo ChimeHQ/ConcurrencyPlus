@@ -6,7 +6,7 @@ extension String: Error {
 
 final class TaskTests: XCTestCase {
 	func testRelayValueErrorPair() async throws {
-		let successClosure: (Int?, Error?) -> Void = {
+		let successClosure: @Sendable (Int?, Error?) -> Void = {
 			XCTAssertEqual($0, 42)
 			XCTAssertNil($1)
 		}
@@ -17,7 +17,7 @@ final class TaskTests: XCTestCase {
 
 		let _ = try await t1.value
 
-		let failureClosure: (Int?, Error?) -> Void = {
+		let failureClosure: @Sendable (Int?, Error?) -> Void = {
 			XCTAssertNil($0)
 			XCTAssertNotNil($1)
 		}
