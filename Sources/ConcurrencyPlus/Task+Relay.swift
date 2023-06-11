@@ -9,7 +9,7 @@ public extension Task where Failure == Error {
 	static func relayResult(
 		priority: TaskPriority? = nil,
 		to block: @escaping @Sendable (Success?, Failure?) -> Void,
-		@_inheritActorContext operation: @escaping @Sendable () async throws -> Success
+		operation: @escaping @Sendable () async throws -> Success
 	) -> Self {
         return Task(priority: priority) {
             do {
@@ -34,7 +34,7 @@ public extension Task where Failure == Error {
 	static func relayResult(
 		priority: TaskPriority? = nil,
 		to block: @escaping @Sendable (Result<Success, Failure>) -> Void,
-		@_inheritActorContext operation: @escaping @Sendable () async throws -> Success
+		operation: @escaping @Sendable () async throws -> Success
 	) -> Self {
         return Task(priority: priority) {
             do {
@@ -61,7 +61,7 @@ public extension Task where Success == (), Failure == Error {
 	static func relayResult(
 		priority: TaskPriority? = nil,
 		to block: @escaping @Sendable (Failure?) -> Void,
-		@_inheritActorContext operation: @escaping @Sendable () async throws -> Success
+		operation: @escaping @Sendable () async throws -> Success
 	) -> Self {
         return Task(priority: priority) {
             do {
