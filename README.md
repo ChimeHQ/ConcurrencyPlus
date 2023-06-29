@@ -6,6 +6,11 @@
 # ConcurrencyPlus
 Utilities for working with Swift Concurrency
 
+⚠️ Better, more-focused libraries have since been extracted from this one. ⚠️
+
+For an async-compatible queue, check out [Queue](https://github.com/mattmassicotte/Queue).
+For async support in XPC, try [AsyncXPCConnection](https://github.com/ChimeHQ/AsyncXPCConnection).
+
 This is a really small library with some types and extensions that may be useful when working with Swift's concurrency system.
 
 - A `TaskQueue` for queuing tasks in FIFO ordering
