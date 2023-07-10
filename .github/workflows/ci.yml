@@ -9,17 +9,17 @@ on:
       - '**'
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_14.1.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_15_0.app/Contents/Developer
 
 jobs:
   test:
     name: Test
-    runs-on: macos-12
+    runs-on: macos-13
     strategy:
       matrix:
         destination:
           - "platform=macOS"
-          - "platform=iOS Simulator,name=iPhone 11"
+          - "platform=iOS Simulator,name=iPhone 12"
     
     steps:
       - uses: actions/checkout@v2
