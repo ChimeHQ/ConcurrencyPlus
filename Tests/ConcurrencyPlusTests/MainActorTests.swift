@@ -2,15 +2,32 @@ import XCTest
 @testable import ConcurrencyPlus
 
 final class MainActorTests: XCTestCase {
-	func testRunOnMainUnsafely() async throws {
-		let t = Task { @MainActor in
-			return MainActor.runUnsafely {
-				// this will crash if not on the main thread
-				return 42
+	@MainActor
+	func testRunOnMainUnsafely() throws {
+		let value = MainActor.runUnsafely {
+			// this will crash if not on the main thread
+			return 42
+		}
+
+		XCTAssertEqual(value, 42)
+	}
+
+	func testRunOnMainUnsafelyFromBackground() throws {
+		var value: Int? = nil
+		let exp = expectation(description: "value")
+
+		DispatchQueue.global().async {
+			DispatchQueue.main.async {
+				value = MainActor.runUnsafely {
+					// this will crash if not on the main thread
+					return 42
+				}
+
+				exp.fulfill()
 			}
 		}
 
-		let value = await t.value
+		wait(for: [exp])
 
 		XCTAssertEqual(value, 42)
 	}
