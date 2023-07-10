@@ -9,7 +9,7 @@ on:
       - '**'
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_15_0.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_15.0.app/Contents/Developer
 
 jobs:
   test:
